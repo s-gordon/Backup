@@ -41,7 +41,7 @@ As described in the title, I'm using exclusively Unix tools like RSYNC for the
 remote copy, and CRON for the tasks scheduling and some other Unix sugars to
 have this working all together. I have set a predefined folder structure where
 I'm storing my backed up files, and have a file archiver with a rotation system
-that compresses and groups snapshots together.  
+that compresses and groups snapshots together.
 
 At the time I'm writing this article, I know that there are plenty OpenSource
 softwares that provide nearly the same features that I'm presenting here, but I
@@ -61,8 +61,8 @@ provide at least the following features:
 * **Secured**       : To have the archives encrypted to be stored on external systems
 * **Consistent**    : Need to preserve files, links, rights and dates
 
-In the next 5 sections I'll try as far as I can to go about many details of the tools and
-technics we will be using.
+In the next 5 sections I'll try as far as I can to go about many details of the
+tools and techniques we will be using.
 
 1. Data repository model
 1. Retrieve files to create snapshots with RSYNC
@@ -104,19 +104,21 @@ NOW=$(date +%Y%m%d%H%M)
 # Backup Configuration
 BACKUP_HOME="/tmp/backups"
 CURRENT_LINK="$BACKUP_HOME/current"
-SNAPSHOT_DIR="$BACKUP_HOME/snapshots"
+fNAPSHOT_DIR="$BACKUP_HOME/snapshots"
 ARCHIVES_DIR="$BACKUP_HOME/archives"
 ```
 
 #### The Snapshots folder
 
 The definition of Snapshot is a copy of your files at a given instant,
-think of it as a Photo of your files by an instant camera. This kind of
-backup are useful when you have several snapshots for the current day, to be able to recover easily a single file or folder from few hours earlier. 
+think of it as a Photo of your files by an instant camera. This kind of backup
+are useful when you have several snapshots for the current day, to be able to
+recover easily a single file or folder from few hours earlier.
 
-We will need to take several snapshots a day, let's say one hourly
-during the working day, which is not so huge since it will not exceed a dozen per day. For practical reasons, that you could figure out, they
-are not compressed neither archived in order to recover a file easily. 
+We will need to take several snapshots a day, let's say one hourly during the
+working day, which is not so huge since it will not exceed a dozen per day. For
+practical reasons, that you could figure out, they are not compressed neither
+archived in order to recover a file easily.
 
 All the snapshots will be stored under
 `backups/snapshots/YYYYMMDDHHMM/`.  And to keep snapshots fast and
@@ -124,16 +126,11 @@ efficient in term of disk usage, I will use hard links between
 snapshots. This technic is available in RSYNC and will be detailed
 below.
 
-#### Archives
-
-If we want to preserve your disc space, we should think about archiving old backups. No need to keep definitely all the snapshots folders since you rarely need to browse files older than one or two days. That's why we will create an archive everyday with the content of the previous day. 
-
-All the previous snapshots will be gathered in an weekly, monthly and yearly encrypted backups archives. To do so we will use `tar`, compress with gunzip and encrypt with GnuPG.
-
 #### Current
 
-`current` is a symbolic link pointing to the last snapshot folder. This reference will be used in the future command lines, for example to request rsync to hard link to it.
-
+`current` is a symbolic link pointing to the last snapshot folder. This
+reference will be used in the future command lines, for example to request rsync
+to hard link to it.
 
 ### Rsync
 
@@ -145,27 +142,29 @@ options available that will let us tune it easily to our needs.
 Here is the command we will use, with its options:
 
 ```bash
-rsync --hard-links --archive --compress --link-dest=$CURRENT_LINK $BACKUP_SOURCE_DIR $SNAPSHOT_DIR/$NOW
+rsync -avH --compress --link-dest=$CURRENT_LINK $BACKUP_SOURCE_DIR $SNAPSHOT_DIR/$NOW
 ```
 
-The options are self descriptives, but let's detail them to be sure to
+The options are self descriptive, but let's detail them to be sure to
 understand their roles:
 
 * `--compress` or `-z`: means that the compression will be used to reduce
   the size of data sent.
 * `--hard-links` and `--link-dest=DIR`: hard link to files in DIR when
-  unchanged. I use this option to optimize the disk space since only
-files updated or newly created will consume disk space. By the way, it also
-addresses the speed issue. I use the path to the `current` symlink to
-make sure that the hard link are executed on the most recent update.
+  unchanged. I use this option to optimize the disk space since only files
+  updated or newly created will consume disk space. By the way, it also
+  addresses the speed issue. I use the path to the `current` symlink to make
+  sure that the hard link are executed on the most recent update.
 * `--archive` or `-a`: is a shortcut for several options that acts like
   if you were creating a tar archive using the "tar pipe" technic, that is to
-say:
+  say:
+
    * recurse into directories
    * copy symlinks as symlinks
    * preserve permissions, times, group, owner and device
 
-`du` displays disk usage statistics, if you want to confirm hard links are working fine, you can execute the `du -sch` on all the snapshots like this:
+`du` displays disk usage statistics, if you want to confirm hard links are
+working fine, you can execute the `du -sch` on all the snapshots like this:
 
 ```
 du -sch backups/snapshots/*
@@ -182,14 +181,18 @@ du -sch backups/snapshots/*
 * `-c` Displays a grand total.
 * `-h` Human readable output.
 
-**Warning**: I discovered it's not working with SAMBA NTFS drives because this filesystem does not understand hard links and it simply duplicates the files.
+**Warning**: I discovered it's not working with SAMBA NTFS drives because this
+filesystem does not understand hard links and it simply duplicates the files.
 
 References:
 
 * [The tar-pipe](http://blog.extracheese.org/2010/05/the-tar-pipe.html)
-   
-#### Chained Commands 
-Each time a snapshot backup has been successfully finished, we relink the symbolic link `current` to this one. For this, I'm using the Bash chained commands with an AND conditional execution.
+
+#### Chained Commands
+
+Each time a snapshot backup has been successfully finished, we relink the
+symbolic link `current` to this one. For this, I'm using the Bash chained
+commands with an AND conditional execution.
 
 ```bash
 command1 && command2
@@ -215,13 +218,15 @@ And here are the details of the different options used:
 * `-f` to force the override of the existing link
 * `-n` do not follow the target if it's already a symlink.
 
-Be aware that without the `-n` option, the `ln` command will act as if you were requesting it to link the last snapshot inside of the previous one, like this way:
+Be aware that without the `-n` option, the `ln` command will act as if you were
+requesting it to link the last snapshot inside of the previous one, like this
+way:
 
 ```
 backups
 `-- current -> snapshots/201111201646
   |-- 201111220901 -> snapshots/201111220901
-  |-- Downloads 
+  |-- Downloads
   ...
 ```
 
