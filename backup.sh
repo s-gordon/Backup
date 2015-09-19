@@ -18,6 +18,7 @@ else
 fi
 
 # }}}
+
 # Error Reporting --------------------------------------------------------- {{{
 
 # Taken from <http://www.linuxcommand.org/wss0150.php>
@@ -87,8 +88,8 @@ done
 # Variable to configure
 HOST="backup"
 USER="sgordon"
-BACKUP_HOME="/mnt/SEGordon_Backup/MacBookPro/home"
-# BACKUP_HOME="/mnt/Resources/backup/MacBookPro/home"
+BACKUP_HOME="/mnt/SEGordon_Backup/MacBookAir/home"
+# BACKUP_HOME="/mnt/Resources/backup/MacBookAir/home"
 PROJECT_DIR="$(dirname "$0")"
 BACKUP_SOURCE_DIR="/Users/$USER"
 BACKUP_EXCLUDE_LIST="$PROJECT_DIR/exclude-list.txt"
@@ -97,7 +98,7 @@ BACKUP_EXCLUDE_LIST="$PROJECT_DIR/exclude-list.txt"
 NOW=$(date +%Y%m%d%H%M)               #YYYYMMDDHHMM
 
 # Backup Configuration
-LOGFILE="/mnt/Resources/backup/MacBookPro/home/backups.log"
+LOGFILE="/mnt/Resources/backup/MacBookAir/home/backups.log"
 CURRENT_LINK="$BACKUP_HOME/current"
 SNAPSHOT_DIR="$BACKUP_HOME/snapshots"
 
@@ -106,6 +107,7 @@ echo $CURRENT_LINK
 start_time=$(date +%s)
 
 # }}}
+
 # Precautionary checks ---------------------------------------------------- {{{
 
 # Init the folder structure
