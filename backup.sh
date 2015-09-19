@@ -116,10 +116,11 @@ touch $LOGFILE
 printf "[%12d] Backup started\n" "$NOW" >> "$LOGFILE"
 
 # }}}
+
 # Step #1: Retrieve files to create snapshots with RSYNC ------------------ {{{
 
 # rsync -azHvP --link-dest="$CURRENT_LINK" --exclude-from "$BACKUP_EXCLUDE_LIST" "$BACKUP_SOURCE_DIR" "$backup$SNAPSHOT_DIR/$NOW" \
-rsync -azHvP --link-dest="$CURRENT_LINK" --exclude-from "$BACKUP_EXCLUDE_LIST" -e "$SSH" "$BACKUP_SOURCE_DIR" "$HOST:$SNAPSHOT_DIR/$NOW" \
+rsync -azH --link-dest="$CURRENT_LINK" --exclude-from "$BACKUP_EXCLUDE_LIST" -e "$SSH" "$BACKUP_SOURCE_DIR" "$HOST:$SNAPSHOT_DIR/$NOW" \
   && RECENTSNAPSHOT=$("$SSH" $HOST "ls -1d $SNAPSHOT_DIR/* | tail -n1") \
   && "$SSH" $HOST "ln -snf $RECENTSNAPSHOT $CURRENT_LINK" \
   && printf "\t- Copy from %s to %s successful \n" "$BACKUP_SOURCE_DIR" "$SNAPSHOT_DIR/$NOW" >> $LOGFILE
