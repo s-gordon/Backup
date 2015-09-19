@@ -1,4 +1,11 @@
+# Large files I don't care about # {{{1
+
 *iso
+
+# }}}1
+
+# Hidden files # {{{1
+
 .DocumentRevisions-V100
 .Screenshot
 .Spotlight-V100
@@ -36,11 +43,23 @@
 .vmd
 .vmdrc
 .wine
+
+# }}}1
+
+# OSX # {{{1
+
 Applications
 Calibre*
 Library
 Public
 anaconda
+
+# }}}1
+
+# System-specific # {{{
+
 old_dotfiles
 sgordon/bin
 sgordon/cron
+
+# }}}
